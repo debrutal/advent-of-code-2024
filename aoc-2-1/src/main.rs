@@ -31,12 +31,17 @@ fn is_safe(line: &str) -> bool {
     let numbers: Vec<isize> = line.split_whitespace().map(|n|n.parse::<isize>().unwrap()).collect();
     let mut last_number = None;
     let mut direction = None;
+    let mut tolerated = false;
     for  number in numbers.clone(){
         if let Some(last) = last_number {
 
             let difference: isize = last - number;
             if !(1..=3).contains(&difference.abs()){
-                return false;
+                match tolerated {
+                    false =>
+                        tolerated = true,
+                        true => return false
+
             }
             if direction.is_none() {
                 direction = Some(Direction::from_diff(difference));
