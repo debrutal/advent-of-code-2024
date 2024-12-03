@@ -1,8 +1,13 @@
 fn main() {
     let file = std::fs::read_to_string("input/input.txt").expect("Unable to read file");
     let lines: Vec<&str> = file.lines().collect();
-    let count = lines.iter().filter(|e| is_safe(e)).count();
+    let count = from_lines(lines);
     println!("Safe Records: {}", count);
+}
+
+fn from_lines(lines: Vec<&str>) -> usize {
+    let count = lines.iter().filter(|e| is_safe(e)).count();
+    count
 }
 
 #[derive(PartialEq, Clone, Copy, Debug)]
@@ -101,4 +106,42 @@ fn is_safe(line: &str) -> bool {
     );
 
     true
+}
+
+#[cfg(test)]
+pub mod test {
+    use crate::{from_lines, is_safe};
+
+    #[test]
+    fn test_data() {
+        let input = r#"7 6 4 2 1
+         1 2 7 8 9
+         9 7 6 2 1
+         1 3 2 4 5
+         8 6 4 4 1
+         1 3 6 7 9"#;
+
+        let lines = input.lines().collect::<Vec<&str>>();
+        let count = from_lines(lines);
+
+        assert_eq!(count, 4);
+    }
+
+    use rstest::rstest;
+
+    #[rstest]
+    #[case(r#"1 2 3 4 5 6"#, true)]
+    #[case(r#"1 2 3 4 5 5"#, true)]
+    #[case(r#"1 1 3 4 5 6"#, true)]
+    #[case(r#"1 2 0 4 5 6"#, true)]
+    #[case(r#"1 5 3 7 8 6"#, false)]
+    #[case(r#"1 5 9 10 11 12"#, false)]
+    #[case(r#"1 2 3 4 5 6"#, true)]
+    fn is_safe_test(#[case] input: &str, #[case] expected: bool) {
+        assert_eq!(expected, fibonacci(input))
+    }
+
+    fn fibonacci(input: &str) -> bool {
+        is_safe(input)
+    }
 }
